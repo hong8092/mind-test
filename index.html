@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>古老心灵测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            line-height: 1.8;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(148, 163, 237, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(167, 139, 250, 0.05) 0%, transparent 50%);
+            animation: backgroundShift 20s ease-in-out infinite;
+            z-index: -1;
+        }
+        @keyframes backgroundShift {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(-20px, -20px); }
+            66% { transform: translate(20px, -20px); }
+        }
+        .container {
+            max-width: 700px;
+            background: rgba(255,255,255,0.05);
+            padding: 50px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 0 60px rgba(0,0,0,0.6),
+                0 8px 32px rgba(31, 38, 135, 0.37),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.18);
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: #e0e0ff;
+            text-shadow: 0 0 30px rgba(167, 139, 250, 0.5);
+            background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 3s ease-in-out infinite alternate;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); }
+        }
+        .desc {
+            font-size: 16px;
+            color: #ccc;
+            margin-bottom: 40px;
+            line-height: 2.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            text-align: justify;
+            text-indent: 2em;
+            letter-spacing: 0.5px;
+        }
+        .start-btn {
+            padding: 16px 50px;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(79, 70, 229, 0.5);
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+        }
+        .start-btn:active {
+            transform: translateY(0);
+        }
+        .result {
+            display: none;
+            margin-top: 40px;
+            text-align: left;
+            background: rgba(255,255,255,0.08);
+            padding: 35px;
+            border-radius: 16px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255,255,255,0.18);
+            animation: fadeInUp 0.8s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .result h2 {
+            margin-bottom: 25px;
+            text-align: center;
+            color: #a78bfa;
+            font-size: 24px;
+            text-shadow: 0 0 20px rgba(167, 139, 250, 0.5);
+        }
+        .item {
+            margin: 18px 0;
+            font-size: 16px;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            line-height: 1.9;
+            letter-spacing: 0.3px;
+        }
+        .item:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateX(5px);
+        }
+        .label {
+            color: #a78bfa;
+            font-weight: bold;
+            font-size: 17px;
+            margin-right: 10px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .modal h2 {
+            color: #a78bfa;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        .modal p {
+            color: #ccc;
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .modal-input:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .modal-btn.confirm {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: white;
+        }
+        .modal-btn.confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+        }
+        .modal-btn.cancel {
+            background: rgba(255,255,255,0.1);
+            color: #ccc;
+        }
+        .modal-btn.cancel:hover {
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>古老心灵测试</h1>
+    <div class="desc">
+这是一段流传于岁月深处的神秘仪式，
+无数人亲测，其准验程度令人默然不语。
+当你静下心来，文字便会与命运产生共鸣。
+请保持虔诚，不必犹豫，不必反复斟酌，
+凭第一直觉写下心中最先浮现的答案。
+心诚则灵，你的每一次落笔，都将映照出独属于你的宿命轨迹。
+    </div>
+    <button class="start-btn" id="start">开始测试</button>
+
+    <!-- 自定义模态框 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">问题 1/6</h2>
+            <p id="modal-question">请输入第一个人名<br>（凭第一直觉，不要思考）</p>
+            <input type="text" class="modal-input" id="modal-input" placeholder="请输入答案">
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" id="modal-cancel">取消</button>
+                <button class="modal-btn confirm" id="modal-confirm">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="result" id="result">
+        <h2>宿命回响・<span style="color: #fbbf24; font-weight: bold;" id="user-name"></span>的专属预言</h2>
+        <div class="item">
+            <p style="font-size: 17px; line-height: 2.2; margin: 20px 0; text-align: justify;">
+                与你宿命牵绊最深的，是 <span style="color: #f472b6; font-weight: bold;" id="p1"></span>，此间心意，恰如《<span style="color: #60a5fa; font-weight: bold;" id="s1"></span>》所唱。<br><br>
+                在岁月里为你驻足停留的，是 <span style="color: #a78bfa; font-weight: bold;" id="p2"></span>，缘分之境，恰似《<span style="color: #60a5fa; font-weight: bold;" id="s2"></span>》所言。<br><br>
+                未来与你命运交织同行的，是 <span style="color: #34d399; font-weight: bold;" id="p3"></span>，前路光景，正如《<span style="color: #60a5fa; font-weight: bold;" id="s3"></span>》所叙。
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 等待页面加载完成
+    document.addEventListener('DOMContentLoaded', function() {
+        const startBtn = document.getElementById('start');
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalQuestion = document.getElementById('modal-question');
+        const modalInput = document.getElementById('modal-input');
+        const modalConfirm = document.getElementById('modal-confirm');
+        const modalCancel = document.getElementById('modal-cancel');
+        
+        // 检查所有元素是否存在
+        if (!startBtn || !modal || !modalTitle || !modalQuestion || !modalInput || !modalConfirm || !modalCancel) {
+            console.error('未找到必要的DOM元素');
+            return;
+        }
+        
+        // 测试数据
+        const testData = {
+            name: '',
+            p1: '',
+            s1: '',
+            p2: '',
+            s2: '',
+            p3: '',
+            s3: ''
+        };
+        
+        // 当前问题索引
+        let currentStep = 0;
+        
+        // 问题列表
+        const questions = [
+            {
+                title: '初始仪式',
+                question: '请输入您的称呼',
+                field: 'name'
+            },
+            {
+                title: '问题 1/6',
+                question: '请输入第一个人名<br>（凭第一直觉，不要思考）',
+                field: 'p1'
+            },
+            {
+                title: '问题 2/6',
+                question: '请输入第一首歌名',
+                field: 's1'
+            },
+            {
+                title: '问题 3/6',
+                question: '请输入第二个人名',
+                field: 'p2'
+            },
+            {
+                title: '问题 4/6',
+                question: '请输入第二首歌名',
+                field: 's2'
+            },
+            {
+                title: '问题 5/6',
+                question: '请输入第三个人名',
+                field: 'p3'
+            },
+            {
+                title: '问题 6/6',
+                question: '请输入第三首歌名',
+                field: 's3'
+            }
+        ];
+        
+        // 显示模态框
+        function showModal(step) {
+            const q = questions[step];
+            modalTitle.textContent = q.title;
+            modalQuestion.innerHTML = q.question;
+            modalInput.value = '';
+            modalInput.focus();
+            modal.classList.add('show');
+        }
+        
+        // 隐藏模态框
+        function hideModal() {
+            modal.classList.remove('show');
+        }
+        
+        // 完成测试
+        function completeTest() {
+            // 检查所有元素是否存在
+            const userNameEl = document.getElementById('user-name');
+            const p1El = document.getElementById('p1');
+            const s1El = document.getElementById('s1');
+            const p2El = document.getElementById('p2');
+            const s2El = document.getElementById('s2');
+            const p3El = document.getElementById('p3');
+            const s3El = document.getElementById('s3');
+            const resultEl = document.getElementById('result');
+
+            if (!userNameEl || !p1El || !s1El || !p2El || !s2El || !p3El || !s3El || !resultEl) {
+                console.error('未找到必要的DOM元素');
+                return;
+            }
+
+            // 填入结果
+            userNameEl.innerText = testData.name;
+            p1El.innerText = testData.p1;
+            s1El.innerText = testData.s1;
+            p2El.innerText = testData.p2;
+            s2El.innerText = testData.s2;
+            p3El.innerText = testData.p3;
+            s3El.innerText = testData.s3;
+
+            resultEl.style.display = 'block';
+            console.log('结果显示成功');
+            
+            // 导出数据到文本文件
+            exportTestData();
+            
+            // 10秒后自动隐藏结果
+            setTimeout(() => {
+                resultEl.style.display = 'none';
+                console.log('结果已自动隐藏');
+            }, 10000); // 10000毫秒 = 10秒
+        }
+        
+        // 导出测试数据
+        function exportTestData() {
+            // 检查本地存储中是否已有数据
+            let existingData = localStorage.getItem('testData');
+            let dataArray = [];
+            
+            if (existingData) {
+                dataArray = JSON.parse(existingData);
+            }
+            
+            // 检查是否已存在相同的称呼
+            const exists = dataArray.some(item => item.name === testData.name);
+            
+            if (!exists) {
+                // 添加新数据
+                dataArray.push(testData);
+                localStorage.setItem('testData', JSON.stringify(dataArray));
+                console.log('数据已保存到本地存储');
+            } else {
+                console.log('该称呼已存在，不重复保存');
+            }
+            
+            // 创建文本内容
+            const textContent = dataArray.map(item => 
+                `${item.name} ${item.p1} ${item.s1} ${item.p2} ${item.s2} ${item.p3} ${item.s3}`
+            ).join('\n');
+            
+            // 尝试使用fetch API将数据发送到服务器
+            fetch('save_results.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `data=${encodeURIComponent(textContent)}`,
+            })
+            .then(response => response.text())
+            .then(result => {
+                console.log('服务器响应:', result);
+            })
+            .catch(error => {
+                console.error('保存到服务器失败:', error);
+                // 如果服务器保存失败，回退到下载方式
+                downloadTextFile(textContent);
+            });
+        }
+        
+        // 下载文本文件
+        function downloadTextFile(content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'test_results.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            console.log('文本文件已生成并下载');
+        }
+        
+        // 开始测试按钮点击事件
+        startBtn.onclick = function () {
+            console.log('开始测试按钮被点击');
+            currentStep = 0;
+            showModal(currentStep);
+        };
+        
+        // 确认按钮点击事件
+        modalConfirm.onclick = function () {
+            const value = modalInput.value.trim();
+            if (!value) {
+                // 可以添加更美观的错误提示
+                modalInput.style.borderColor = '#ef4444';
+                modalInput.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.3)';
+                return;
+            }
+            
+            // 保存当前答案
+            testData[questions[currentStep].field] = value;
+            
+            // 隐藏模态框
+            hideModal();
+            
+            // 进行下一步或完成测试
+            currentStep++;
+            if (currentStep < questions.length) {
+                setTimeout(() => showModal(currentStep), 300);
+            } else {
+                completeTest();
+            }
+        };
+        
+        // 取消按钮点击事件
+        modalCancel.onclick = function () {
+            hideModal();
+        };
+        
+        // 输入框聚焦时恢复样式
+        modalInput.addEventListener('focus', function() {
+            modalInput.style.borderColor = 'rgba(255,255,255,0.2)';
+            modalInput.style.boxShadow = 'none';
+        });
+        
+        // 点击模态框背景关闭
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                hideModal();
+            }
+        });
+        
+        // 按Enter键确认
+        modalInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                modalConfirm.click();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
